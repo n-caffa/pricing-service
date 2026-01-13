@@ -1,4 +1,4 @@
-package com.inditex.pricing.pricing_service;
+package com.inditex.pricing;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
