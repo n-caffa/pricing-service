@@ -100,4 +100,37 @@ class PriceControllerSystemIT {
                 .andExpect(jsonPath("$.price").value(38.95))
                 .andExpect(jsonPath("$.currency").value("EUR"));
     }
+
+    @Test
+    void should_return_400_when_brandId_is_negative() throws Exception {
+        mockMvc.perform(get("/api/prices/applicable")
+                        .param("brandId", "-1")
+                        .param("productId", "35455")
+                        .param("applicationDate", "2020-06-14T10:00:00"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(400))
+                .andExpect(jsonPath("$.error").value("Bad Request"));
+    }
+
+    @Test
+    void should_return_400_when_applicationDate_is_malformed() throws Exception {
+        mockMvc.perform(get("/api/prices/applicable")
+                        .param("brandId", "1")
+                        .param("productId", "35455")
+                        .param("applicationDate", "not-a-date"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(400))
+                .andExpect(jsonPath("$.error").value("Bad Request"));
+    }
+
+    @Test
+    void should_return_404_when_no_applicable_price_exists() throws Exception {
+        mockMvc.perform(get("/api/prices/applicable")
+                        .param("brandId", "1")
+                        .param("productId", "35455")
+                        .param("applicationDate", "2019-01-01T00:00:00"))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.status").value(404))
+                .andExpect(jsonPath("$.error").value("Not Found"));
+    }
 }
