@@ -25,5 +25,35 @@ Arquitectura Hexagonal (DDD):
 ## Cómo ejecutar
 Requisitos: Java 17 y Maven.
 
-```bash
-mvn spring-boot:run
+## Api
+Obtener precio aplicable
+
+GET /api/prices/applicable
+Query params
+- brandId (long, > 0)
+- productId (long, > 0)
+- applicationDate (ISO-8601, por ejemplo: 2020-06-14T16:00:00)
+
+curl "http://localhost:8080/api/prices/applicable?brandId=1&productId=35455&applicationDate=2020-06-14T16:00:00"
+
+Respuesta (200 OK)
+
+{
+ "productId": 35455,
+ "brandId": 1,
+ "priceList": 2,
+ "startDate": "2020-06-14T15:00:00",
+ "endDate": "2020-06-14T18:30:00",
+ "price": 25.45,
+ "currency": "EUR"
+}
+
+## Notas de implementación
+
+- La lógica de selección prioriza el registro con priority más alto en caso de solape.
+- La capa de persistencia (JPA) está aislada en infraestructura mediante adaptadores que implementan puertos del dominio.
+
+Se incluyen tests:
+-  Unitarios (casos de uso y validaciones de dominio/DTO)
+-  Integración (repositorio JPA con H2/Flyway)
+-  Sistema (endpoint REST con MockMvc y casuísticas del enunciado)
